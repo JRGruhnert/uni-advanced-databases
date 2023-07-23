@@ -1,8 +1,6 @@
 # Python Program to implement merge sort using
 # multi-threading
 from multiprocessing import Process
-import random
-import string
 from threading import Thread
  
 # number of threads
@@ -40,10 +38,13 @@ def merge(left, right, join_column):
             temp.append(right[r_idx])
             r_idx += 1
 
-    if l_idx < l_len:
-        temp + left[l_idx:]
-    else:
-        temp + right[r_idx:]
+    while l_idx < l_len:
+        temp.append(left[l_idx])
+        l_idx += 1
+
+    while r_idx < r_len:#
+        temp.append(right[r_idx])
+        r_idx += 1
     return temp
 
 # merge function for merging two parts
@@ -83,17 +84,18 @@ def merge_sort(list, join_column):
     
     # calculating mid point of array
     mid = length // 2
- 
+    
     left = merge_sort(list[:mid],join_column)
     right = merge_sort(list[mid:],join_column)
- 
+    assert len(left) + len(right) == length
     # merging the two halves  
-    return merge(left, right, join_column)
+    temp = merge(left, right, join_column)
+    assert len(temp) == length
+    return temp
     
 # merge sort function entry point
 def merge_sort_start(list, join_column, result):
     result += merge_sort(list, join_column)
-   
  
 
 # thread function for multi-threading
@@ -101,14 +103,12 @@ def merge_sort_threaded(list, join_column):
     length = len(list)
     part_length = length // THREAD_MAX
     rest = length % THREAD_MAX
-    result = list.copy()
-     
+    result = []
     # creating threads
     for i in range(0, THREAD_MAX):
-        lower = i*part_length
-        upper = (i+1)*part_length-1
-
-        if i == THREAD_MAX - 1:
+        lower = i*part_length # lower bound
+        upper = (i+1)*part_length # upper bound
+        if i == THREAD_MAX - 1: # last thread gets the rest
             upper += rest
 
         t = Thread(target=merge_sort_start, args=(list[lower:upper], join_column, result))
@@ -117,9 +117,6 @@ def merge_sort_threaded(list, join_column):
     # joining all threads
     for i in range(THREAD_MAX):
         t.join()
-       
-    print("result")
-    print(len(result))
 
     # merging the final parts
     for i in range(0, THREAD_MAX, 2):
@@ -130,21 +127,8 @@ def merge_sort_threaded(list, join_column):
         merge_to(result, join_column, i*part_length,  (i+2)*part_length-1, (i+4)*part_length-1)
 
     merge_to(result, join_column, 0, part_length * THREAD_MAX // 2, part_length * THREAD_MAX-1 + part_length)
+
     return result
     
 
-
-randomlist = []
-for i in range(10000):
-    #result_str = ''.join(random.choice(string.ascii_lowercase) for i in range(20))
-    result_str = random.randint(0, 1000000)
-    dic = {'Subject': "doesnt matter", 'Object': result_str}
-    randomlist.append(dic)
-
-temp = merge_sort_threaded(randomlist, 'Object')
-print("randomlist")
-print(len(temp))
-#for i in temp:
-#    print(i['Object'])
-   
  

@@ -1,8 +1,7 @@
 from collections import defaultdict
-from parallelSort import merge_sort_threaded
+from parallel_sort import merge_sort_threaded
 
-#BBBBBBBBB
-# Hash Join implementation
+# Hash-Join implementation
 def hash_join(table1, table2, join_column):
     # Create hash table for table1 using the join_column
     hash_table = defaultdict(list)
@@ -13,8 +12,8 @@ def hash_join(table1, table2, join_column):
     # Perform the join
     return [(row1, row2) for row2 in table2 for row1 in hash_table[row2[join_column]]]
 
-# Sort-Merge Join implementation
-def sort_merge_join(parallel: bool, table1, table2, string_dict, join_column):
+# Sort-Merge-Join implementation
+def sort_merge_join(parallel: bool, table1, table2, join_column):
     # Sort both tables based on the join_column
     sorted_table1 = []
     sorted_table2 = []
@@ -40,5 +39,8 @@ def sort_merge_join(parallel: bool, table1, table2, string_dict, join_column):
             j += 1
 
     return result
+
+
+
 
 
