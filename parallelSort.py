@@ -25,7 +25,7 @@ class ListThread(Thread):
  '''
 
 # merge function for merging two parts
-def merge(left: list[dict[str, str]], right: list[dict[str, str]], join_column) -> list[dict[str, str]]:
+def merge(left, right, join_column):
     l_len = len(left)
     r_len = len(right)
     l_idx = r_idx = 0
@@ -44,7 +44,6 @@ def merge(left: list[dict[str, str]], right: list[dict[str, str]], join_column) 
         temp + left[l_idx:]
     else:
         temp + right[r_idx:]
-
     return temp
 
 # merge function for merging two parts
@@ -66,18 +65,18 @@ def merge_to(result, join_column, low, mid, high):
             r_idx += 1
         k += 1
     while l_idx < l_len:
-        result[k:] = left[l_idx:]
+        result[k] = left[l_idx]
         l_idx += 1
         k += 1
 
     while r_idx < r_len:
-        result[k:] = right[r_idx:]
+        result[k] = right[r_idx]
         r_idx += 1
         k += 1
 
  
 # merge sort function
-def merge_sort(list: list[dict[str, str]], join_column) -> list[dict[str, str]]:
+def merge_sort(list, join_column):
     length = len(list)
     if length < 2:
         return list
@@ -92,8 +91,8 @@ def merge_sort(list: list[dict[str, str]], join_column) -> list[dict[str, str]]:
     return merge(left, right, join_column)
     
 # merge sort function entry point
-def merge_sort_start(list, join_column, result: list[dict[str, str]]):
-    result.append(merge_sort(list, join_column))
+def merge_sort_start(list, join_column, result):
+    result += merge_sort(list, join_column)
    
  
 
@@ -102,7 +101,7 @@ def merge_sort_threaded(list, join_column):
     length = len(list)
     part_length = length // THREAD_MAX
     rest = length % THREAD_MAX
-    result = []
+    result = list.copy()
      
     # creating threads
     for i in range(0, THREAD_MAX):
@@ -119,6 +118,8 @@ def merge_sort_threaded(list, join_column):
     for i in range(THREAD_MAX):
         t.join()
        
+    print("result")
+    print(len(result))
 
     # merging the final parts
     for i in range(0, THREAD_MAX, 2):
@@ -129,8 +130,7 @@ def merge_sort_threaded(list, join_column):
         merge_to(result, join_column, i*part_length,  (i+2)*part_length-1, (i+4)*part_length-1)
 
     merge_to(result, join_column, 0, part_length * THREAD_MAX // 2, part_length * THREAD_MAX-1 + part_length)
-    
-    return list
+    return result
     
 
 
@@ -141,7 +141,10 @@ for i in range(10000):
     dic = {'Subject': "doesnt matter", 'Object': result_str}
     randomlist.append(dic)
 
-merge_sort_threaded(randomlist, 'Object')
-print(randomlist[0:100])
+temp = merge_sort_threaded(randomlist, 'Object')
+print("randomlist")
+print(len(temp))
+#for i in temp:
+#    print(i['Object'])
    
  
