@@ -10,7 +10,9 @@ def hash_join(table1, table2, join_column1, join_column2):
         hash_table[row[join_column1]].append(row)
 
     # Perform the join
-    return [(row1, row2) for row2 in table2 for row1 in hash_table[row2[join_column2]]]
+    return [{join_column1: row1[join_column2], join_column2: row2[join_column1]} for row2 in table2 for row1 in hash_table[row2[join_column2]]]
+
+   
 
 # Sort-Merge-Join implementation
 def sort_merge_join(parallel: bool, table1, table2, join_column1, join_column2):

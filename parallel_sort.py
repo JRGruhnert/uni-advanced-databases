@@ -1,6 +1,8 @@
 # Python Program to implement merge sort using
 # multi-threading
+import math
 from multiprocessing import Process
+import multiprocessing
 from threading import Thread
  
 # number of threads
@@ -42,7 +44,7 @@ def merge(left, right, join_column):
         temp.append(left[l_idx])
         l_idx += 1
 
-    while r_idx < r_len:#
+    while r_idx < r_len:
         temp.append(right[r_idx])
         r_idx += 1
     return temp
@@ -77,7 +79,7 @@ def merge_to(result, join_column, low, mid, high):
 
  
 # merge sort function
-def merge_sort(list, join_column):
+def merge_sort(list, join_column='Object'):
     length = len(list)
     if length < 2:
         return list
@@ -87,16 +89,18 @@ def merge_sort(list, join_column):
     
     left = merge_sort(list[:mid],join_column)
     right = merge_sort(list[mid:],join_column)
-    assert len(left) + len(right) == length
     # merging the two halves  
-    temp = merge(left, right, join_column)
-    assert len(temp) == length
-    return temp
+    return merge(left, right, join_column)
+    
     
 # merge sort function entry point
 def merge_sort_start(list, join_column, result):
-    result += merge_sort(list, join_column)
+    result += sorted(list, key=lambda x: x[join_column])
+    #result += merge_sort(list, join_column)
  
+ # merge sort function entry point
+def merge_sort2(list):
+    return sorted(list, key=lambda x: x['Object'])
 
 # thread function for multi-threading
 def merge_sort_threaded(list, join_column):
@@ -131,4 +135,21 @@ def merge_sort_threaded(list, join_column):
     return result
     
 
- 
+ # thread function for multi-threading
+def merge_sort_threaded2(list, join_column):
+    processes = multiprocessing.cpu_count()
+    print("Processes: " + str(processes))
+    pool = multiprocessing.Pool(processes=processes)
+    size = int(math.ceil(float(len(list)) / processes))
+    data = [list[i * size:(i + 1) * size] for i in range(processes)]
+    data = pool.map(merge_sort2, data)
+
+    while len(data) > 1:
+        # If the number of partitions remaining is odd, we pop off the
+        # last one and append it back after one iteration of this loop,
+        # since we're only interested in pairs of partitions to merge.
+        extra = data.pop() if len(data) % 2 == 1 else None
+        data = [(data[i], data[i + 1]) for i in range(0, len(data), 2)]
+        #TODO: Here is the problem with merge
+        data = pool.map(merge, data) + ([extra] if extra else [])
+    return data[0]
