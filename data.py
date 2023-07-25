@@ -1,39 +1,40 @@
 from rdflib import Graph
+import rdflib
+
+FOLLOWS = rdflib.term.URIRef('http://db.uwaterloo.ca/~galuc/wsdbm/follows')
+FRIEND_OF = rdflib.term.URIRef('http://db.uwaterloo.ca/~galuc/wsdbm/friendOf')
+LIKES = rdflib.term.URIRef('http://db.uwaterloo.ca/~galuc/wsdbm/likes')
+HAS_REVIEW = rdflib.term.URIRef('http://purl.org/stuff/rev#hasReview')
 
 # Parse the RDF data and return a list of triples.
 def _parse_rdf_data(file_path):
     g = Graph()
     g.parse(file_path, format="nt")
-    return list(g)
+    return [(s, p, o) for s, p, o in g.triples((None, None, None)) if p in [FOLLOWS, FRIEND_OF, LIKES, HAS_REVIEW]]
+
 
 # Build a dictionary for all "object" strings in the triples.
 # The dictionary maps each string to a unique integer.
 def _build_string_dictionary(triples):
-    string_dict = {}
-    next_id = 0
-    for triple in triples:
-        subject, property, obj = triple
-       
-        #if isinstance(subject, str) and subject not in string_dict:
-        #    string_dict[subject] = next_id
-        #    next_id += 1
+    strings = set()
+    for s, _, o in triples:
+        if isinstance(s, str):
+            strings.add(s)
+        if isinstance(o, str):
+            strings.add(o)
 
-        if isinstance(obj, str) and obj not in string_dict:
-            string_dict[obj] = next_id
-            next_id += 1
-
-    return string_dict
+    return {s: idx for idx, s in enumerate(strings)}
 
 # Vertically partition the triples based on properties.
-def _vertically_partition(triples):
+def _vertically_partition(triples, dictionary):
     property_tables = {}
     for triple in triples:
         subject, property, object = triple
         if property not in property_tables:
             property_tables[property] = []
 
-        property_tables[property].append({'Subject': subject, 'Object': object})
-
+        property_tables[property].append([dictionary[subject], dictionary[object]])
+    #print(dictionary.values())
     return property_tables
 
 
@@ -47,6 +48,6 @@ def preprocess_data(file_path):
     string_dict = _build_string_dictionary(triples) 
     print("String_dict built")
 
-    property_tables = _vertically_partition(triples)
+    property_tables = _vertically_partition(triples, dictionary=string_dict)
     print("Property tables built")
     return string_dict, property_tables

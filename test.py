@@ -1,31 +1,48 @@
-
+import string
 import time
-
 import random
+
+import numpy as np
 from join import hash_join, sort_merge_join
-
-from parallel_sort import merge_sort_threaded, merge_sort_threaded2
-
-
-randomlist = []
-for i in range(10000000):
-    #result_str = ''.join(random.choice(string.ascii_lowercase) for i in range(20))
-    result_str = random.randint(0, 10000000)
-    dic = {'Subject': "doesnt matter", 'Object': result_str}
-    randomlist.append(dic)
+from radix_sort import radix_sort_by_key
+from merge_sort import merge_sort, parallel_merge_sort
 
 
-start_time = time.time()
-temp = merge_sort_threaded2(randomlist, 'Object')
-end_time = time.time()
-print("Time for sort merge parallel join: " + str(end_time - start_time))
-
-start_time2 = time.time()
-temp2 = sorted(randomlist, key=lambda x: x['Object'])
-end_time2 = time.time()
-print("Time for sort merge join: " + str(end_time2 - start_time2))
+randomlist = np.random.randint(low=0, high=1000000, size=(100000, 2))
+randomlist2 = np.random.randint(low=0, high=1000000, size=(100000, 2))
 
 
+print("Lists created")
+
+#start_time = time.time()
+#temp = radix_sort_by_key(randomlist, 'Object')
+#end_time = time.time()
+#print("Time for radix sort: " + str(end_time - start_time))
+
+#start_time2 = time.time()
+#temp2 = merge_sort(randomlist, 1)
+#end_time2 = time.time()
+#print("Time for merge sort: " + str(end_time2 - start_time2))
+
+#start_time3 = time.time()
+#temp3 = parallel_merge_sort(randomlist, 'Object')
+#end_time3 = time.time()
+#print("Time for parallel merge sort: " + str(end_time3 - start_time3))
+
+#start_time4 = time.time()
+#join = hash_join(randomlist, randomlist2, 'Object', 'Subject')
+#end_time4 = time.time()
+#print("Time for hash join: " + str(end_time4 - start_time4))
+
+start_time5 = time.time()
+join2 = sort_merge_join(False, randomlist, randomlist2, 1, 0)
+end_time5 = time.time()
+print("Time for sort merge join: " + str(end_time5 - start_time5))
+
+#start_time6 = time.time()
+#join3 = sort_merge_join(True, randomlist, randomlist2, 'Object', 'Subject')
+#end_time6 = time.time()
+#print("Time for radix sort merge join: " + str(end_time6 - start_time6))
 
 
 
