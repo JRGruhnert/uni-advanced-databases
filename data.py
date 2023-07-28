@@ -1,4 +1,4 @@
-from rdflib import Graph
+from rdflib import Graph, Literal, URIRef
 import rdflib
 
 FOLLOWS = rdflib.term.URIRef('http://db.uwaterloo.ca/~galuc/wsdbm/follows')
@@ -7,11 +7,34 @@ LIKES = rdflib.term.URIRef('http://db.uwaterloo.ca/~galuc/wsdbm/likes')
 HAS_REVIEW = rdflib.term.URIRef('http://purl.org/stuff/rev#hasReview')
 
 # Parse the RDF data and return a list of triples.
-def _parse_rdf_data(file_path):
-    g = Graph()
-    g.parse(file_path, format="nt")
-    return [(s, p, o) for s, p, o in g.triples((None, None, None)) if p in [FOLLOWS, FRIEND_OF, LIKES, HAS_REVIEW]]
+def _parse_rdf_data(file_path, format="nt"):
+    if(format == "nt"):
+        g = Graph()
+        g.parse(file_path, format=format)
+        return [(s, p, o) for s, p, o in g.triples((None, None, None)) if p in [FOLLOWS, FRIEND_OF, LIKES, HAS_REVIEW]]
+    else:
+        return parse_txt_to_rdf(file_path)
 
+def parse_txt_to_rdf(file_path):
+    rdf_graph = Graph()
+
+    with open(file_path, 'r') as file:
+        for line in file:
+            line = line.strip()
+            if line:  # Skip empty lines
+                subject, predicate, obj = line.split('\t')
+                subject = URIRef(subject)
+                predicate = URIRef(predicate)
+
+                # Check if the object is a URI or a literal
+                if obj.startswith('http://') or obj.startswith('https://'):
+                    obj = URIRef(obj)
+                else:
+                    obj = Literal(obj)
+
+                rdf_graph.add((subject, predicate, obj))
+
+    return rdf_graph
 
 # Build a dictionary for all "object" strings in the triples.
 # The dictionary maps each string to a unique integer.
@@ -40,8 +63,8 @@ def _vertically_partition(triples, dictionary):
 
 
 # Combine all steps and preprocess the data.
-def preprocess_data(file_path):
-    triples = _parse_rdf_data(file_path)
+def preprocess_data(file_path, format):
+    triples = _parse_rdf_data(file_path, format=format)
     print("Data parsed")
     
     # TODO: This is not needed for the join. I skip this step for now.

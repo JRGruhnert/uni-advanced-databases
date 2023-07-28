@@ -27,8 +27,7 @@ print("Lists created")
 #start_time3 = time.time()
 #temp3 = parallel_merge_sort(randomlist, 'Object')
 #end_time3 = time.time()
-#print("Time for parallel merge sort: " + str(end_time3 - start_time3))
-
+#print("Time for parallel merge sort: " + str(end_time3 - start_time3)
 #start_time4 = time.time()
 #join = hash_join(randomlist, randomlist2, 'Object', 'Subject')
 #end_time4 = time.time()
@@ -43,9 +42,6 @@ print("Time for sort merge join: " + str(end_time5 - start_time5))
 #join3 = sort_merge_join(True, randomlist, randomlist2, 'Object', 'Subject')
 #end_time6 = time.time()
 #print("Time for radix sort merge join: " + str(end_time6 - start_time6))
-
-
-
 
 
 #list1 = [{'Subject': 'A', 'Object': 2}, {'Subject': 'B', 'Object': 3}, {'Subject': 'C', 'Object': 8}, {'Subject': 'D', 'Object': 13}]

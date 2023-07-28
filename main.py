@@ -2,7 +2,8 @@ import time
 from data import FOLLOWS, FRIEND_OF, HAS_REVIEW, LIKES, preprocess_data
 from join import hash_join, sort_merge_join
 
-FILE_PATH = "/home/jangruhnert/Documents/watdiv.10M/watdiv.10M.nt"
+#FILE_PATH = "/home/jangruhnert/Documents/watdiv.10M/watdiv.10M.nt"
+FILE_PATH = "/home/jangruhnert/Documents/watdiv.10M/100k.txt"
 JOIN_COLUMN1 = 0  # Assuming 'Object' column is used for joining
 JOIN_COLUMN2 = 1  # Assuming 'Subject' column is used for joining
 
@@ -25,7 +26,7 @@ def request_with_sort_merge_join(parallel, property_tables, join_column1, join_c
     join = sort_merge_join(parallel, join, property_tables[LIKES], JOIN_COLUMN1, JOIN_COLUMN2)
     return sort_merge_join(parallel, join, property_tables[HAS_REVIEW], JOIN_COLUMN1, JOIN_COLUMN2)
 
-string_dict, property_tables = preprocess_data(FILE_PATH)
+string_dict, property_tables = preprocess_data(FILE_PATH, "txt")
 print("Data preprocessed")
 
 
