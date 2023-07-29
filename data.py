@@ -1,10 +1,14 @@
 from rdflib import Graph, Literal, URIRef
-import rdflib
 
-FOLLOWS = rdflib.term.URIRef('http://db.uwaterloo.ca/~galuc/wsdbm/follows')
-FRIEND_OF = rdflib.term.URIRef('http://db.uwaterloo.ca/~galuc/wsdbm/friendOf')
-LIKES = rdflib.term.URIRef('http://db.uwaterloo.ca/~galuc/wsdbm/likes')
-HAS_REVIEW = rdflib.term.URIRef('http://purl.org/stuff/rev#hasReview')
+FOLLOWS = URIRef('http://db.uwaterloo.ca/~galuc/wsdbm/follows')
+FRIEND_OF = URIRef('http://db.uwaterloo.ca/~galuc/wsdbm/friendOf')
+LIKES = URIRef('http://db.uwaterloo.ca/~galuc/wsdbm/likes')
+HAS_REVIEW = URIRef('http://purl.org/stuff/rev#hasReview')
+
+FOLLOWS2 = URIRef('wsdbm:follows')
+FRIEND_OF2 = URIRef('wsdbm:friendOf')
+LIKES2 = URIRef('wsdbm:likes')
+HAS_REVIEW2 = URIRef('rev:hasReview')
 
 # Parse the RDF data and return a list of triples.
 def _parse_rdf_data(file_path, format="nt"):
@@ -25,6 +29,8 @@ def parse_txt_to_rdf(file_path):
                 subject, predicate, obj = line.split('\t')
                 subject = URIRef(subject)
                 predicate = URIRef(predicate)
+                #print(subject)
+                print(predicate)
 
                 # Check if the object is a URI or a literal
                 if obj.startswith('http://') or obj.startswith('https://'):
@@ -32,7 +38,8 @@ def parse_txt_to_rdf(file_path):
                 else:
                     obj = Literal(obj)
 
-                rdf_graph.add((subject, predicate, obj))
+                if predicate in [FOLLOWS2, FRIEND_OF2, LIKES2, HAS_REVIEW2]:
+                    rdf_graph.add((subject, predicate, obj))
 
     return rdf_graph
 

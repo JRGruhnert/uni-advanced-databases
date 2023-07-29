@@ -1,6 +1,5 @@
-from collections import defaultdict
-
 import numpy as np
+from collections import defaultdict
 from radix_sort import radix_sort_by_key
 from merge_sort import merge_sort, parallel_merge_sort
 

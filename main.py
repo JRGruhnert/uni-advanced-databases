@@ -1,5 +1,5 @@
 import time
-from data import FOLLOWS, FRIEND_OF, HAS_REVIEW, LIKES, preprocess_data
+from data import FOLLOWS, FOLLOWS2, FRIEND_OF, FRIEND_OF2, HAS_REVIEW, HAS_REVIEW2, LIKES, LIKES2, preprocess_data
 from join import hash_join, sort_merge_join
 
 #FILE_PATH = "/home/jangruhnert/Documents/watdiv.10M/watdiv.10M.nt"
@@ -17,14 +17,14 @@ def measure_execution_time(func, *args):
     return result, execution_time
 
 def request_with_hash_join(property_tables, join_column1, join_column2):
-    join = hash_join(property_tables[FOLLOWS], property_tables[FRIEND_OF], JOIN_COLUMN1, JOIN_COLUMN2)
-    join = hash_join(join, property_tables[LIKES], JOIN_COLUMN1, JOIN_COLUMN2)
-    return hash_join(join, property_tables[HAS_REVIEW], JOIN_COLUMN1, JOIN_COLUMN2)
+    join = hash_join(property_tables[FOLLOWS2], property_tables[FRIEND_OF2], JOIN_COLUMN1, JOIN_COLUMN2)
+    join = hash_join(join, property_tables[LIKES2], JOIN_COLUMN1, JOIN_COLUMN2)
+    return hash_join(join, property_tables[HAS_REVIEW2], JOIN_COLUMN1, JOIN_COLUMN2)
 
 def request_with_sort_merge_join(parallel, property_tables, join_column1, join_column2):
-    join = sort_merge_join(parallel, property_tables[FOLLOWS], property_tables[FRIEND_OF], JOIN_COLUMN1, JOIN_COLUMN2)
-    join = sort_merge_join(parallel, join, property_tables[LIKES], JOIN_COLUMN1, JOIN_COLUMN2)
-    return sort_merge_join(parallel, join, property_tables[HAS_REVIEW], JOIN_COLUMN1, JOIN_COLUMN2)
+    join = sort_merge_join(parallel, property_tables[FOLLOWS2], property_tables[FRIEND_OF2], JOIN_COLUMN1, JOIN_COLUMN2)
+    join = sort_merge_join(parallel, join, property_tables[LIKES2], JOIN_COLUMN1, JOIN_COLUMN2)
+    return sort_merge_join(parallel, join, property_tables[HAS_REVIEW2], JOIN_COLUMN1, JOIN_COLUMN2)
 
 string_dict, property_tables = preprocess_data(FILE_PATH, "txt")
 print("Data preprocessed")
