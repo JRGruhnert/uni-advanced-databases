@@ -1,18 +1,20 @@
-from multiprocessing import Process, Queue
-import multiprocessing
-from threading import Thread
+from multiprocessing import Manager, Process, Queue
 import numpy as np
 
 
 def merge_sort_multiple(results: Queue, array: np.ndarray, join_key: int):
+  '''Sort the array using merge sort.'''
   results.put(merge_sort(array, join_key))
 
 
 def merge_multiple(results: Queue, array_part_left: np.ndarray, array_part_right: np.ndarray, join_key: int):
+  '''Merge two sorted lists into a single sorted list.'''
   results.put(merge(array_part_left, array_part_right, join_key))
 
 
 def merge_sort(array: np.ndarray, join_key: int):
+    '''Sort the array using merge sort.'''
+    
     array_length = len(array)
 
     if array_length <= 1:
@@ -28,6 +30,8 @@ def merge_sort(array: np.ndarray, join_key: int):
 
 
 def merge(left: np.ndarray, right: np.ndarray, join_key: int):
+    '''Merge two sorted lists into a single sorted list.'''
+
     sorted_list = np.zeros((len(left) + len(right), 2), dtype=int)
 
     idx_sorted = 0
@@ -53,20 +57,20 @@ def merge(left: np.ndarray, right: np.ndarray, join_key: int):
     return sorted_list
 
 def parallel_merge_sort(array: np.ndarray, join_key: int, process_count=8):
-    # Divide the list in chunks
-    step = int((len(array) - 1) / process_count)
+    '''Sort the array using merge sort and parallelism.'''
 
-    manager = multiprocessing.Manager()
-    results_queue = manager.Queue()
+    batch_size = int((len(array) - 1) / process_count) # Size of each batch
+    results_queue = Manager().Queue() # Queue to store the results of the merge sort processes
+    processes = [] # List to store the processes
 
-    # Create a list to hold the processes
-    processes = []
     for n in range(process_count):
         if n < process_count - 1:
-            chunk = array[n * step:(n + 1) * step]
+            batch = array[n * batch_size:(n + 1) * batch_size]
         else:
-            chunk = array[n * step:]
-        process = Process(target=merge_sort_multiple, args=(results_queue, chunk, join_key))
+            batch = array[n * batch_size:] #last batch may be larger
+        
+        # Start a new process to sort the batch
+        process = Process(target=merge_sort_multiple, args=(results_queue, batch, join_key))
         process.start()
         processes.append(process)
 
@@ -74,9 +78,7 @@ def parallel_merge_sort(array: np.ndarray, join_key: int, process_count=8):
     for process in processes:
         process.join()
 
-   
-
-    # For a core count greater than 2, we can use multiprocessing again to merge sub-lists in parallel.
+    # Merge the results in a binary tree fashion
     while results_queue.qsize() > 1:
         # Create a list to hold the merge processes
         merge_processes = []
