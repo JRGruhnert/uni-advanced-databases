@@ -9,7 +9,7 @@ It is recommended to use a virtual environment!
 
 1. Clone the repository:
    ```sh
-   $ git clone [https://github.com/your_username_/Project-Name.git](https://github.com/JRGruhnert/uni-advanced-databases.git)
+   $ git clone https://github.com/JRGruhnert/uni-advanced-databases.git
    ```
 1. Open the projects ordner in your terminal.
 2. Install required packages:
