@@ -1,6 +1,5 @@
 import numpy as np
 from collections import defaultdict
-from radix_sort import radix_sort_by_key
 from merge_sort import merge_sort, parallel_merge_sort
 
 
@@ -15,7 +14,7 @@ def hash_join(table1: np.ndarray, table2: np.ndarray, join_key1: int, join_key2:
         hash_table[row[join_key1]].append(row)
 
     # Perform the join
-    return [[row1[join_key2],row2[join_key1]] for row2 in table2 for row1 in hash_table[row2[join_key2]]]
+    return [[row1[join_key2],row2[abs(join_key1 - 1)]] for row2 in table2 for row1 in hash_table[row2[join_key2]]]
 
    
 def sort_merge_join(mode: int, table1: np.ndarray, table2: np.ndarray, join_key1: int, join_key2: int):
@@ -44,7 +43,7 @@ def sort_merge_join(mode: int, table1: np.ndarray, table2: np.ndarray, join_key1
 
         if left_item[join_key1] == right_item[join_key2]:
             # Join the matching items
-            result.append([left_item[join_key1], right_item[join_key2]])
+            result.append([left_item[join_key1], right_item[abs(join_key2 - 1)]])
             idx_left += 1
             idx_right += 1
     

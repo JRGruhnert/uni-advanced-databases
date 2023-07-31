@@ -1,6 +1,18 @@
 from multiprocessing import Manager, Process, Queue
 import numpy as np
 
+class Counter:
+    def __init__(self):
+        self.value = 0
+    def increment(self):
+        self.value += 1
+    def get_value(self):
+        return self.value
+    def reset(self):
+        self.value = 0
+
+
+move_counter = Counter()
 
 def merge_sort_multiple(results: Queue, array: np.ndarray, join_key: int):
   '''Sort the array using merge sort.'''
